@@ -6,6 +6,9 @@ const projectsData = [
     for.`,
     imgSrc: '/static/images/google.png',
     href: 'https://www.google.com',
+    tech: ['NextJS', 'Tailwind'],
+    date: '07/07/21',
+    github: 'https://www.alphr.com/deselect-gimp/',
   },
   {
     title: 'The Time Machine',
@@ -14,6 +17,9 @@ const projectsData = [
     forgotten headphones with this simple yet affordable solution.`,
     imgSrc: '/static/images/time-machine.jpg',
     href: '/blog/the-time-machine',
+    tech: [],
+    date: '07/07/21',
+    github: 'https://www.alphr.com/deselect-gimp/',
   },
 ]
 

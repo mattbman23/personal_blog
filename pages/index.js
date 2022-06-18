@@ -5,8 +5,6 @@ import siteMetadata from '@/data/siteMetadata'
 import { getAllFilesFrontMatter } from '@/lib/mdx'
 import formatDate from '@/lib/utils/formatDate'
 
-import NewsletterForm from '@/components/NewsletterForm'
-
 const MAX_DISPLAY = 5
 
 export async function getStaticProps() {
@@ -34,7 +32,7 @@ export default function Home({ posts }) {
             const { slug, date, title, summary, tags } = frontMatter
             return (
               <li key={slug} className="py-12">
-                <article>
+                <article className="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-gray-600">
                   <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
                     <dl>
                       <dt className="sr-only">Published on</dt>
@@ -48,7 +46,7 @@ export default function Home({ posts }) {
                           <h2 className="text-2xl font-bold leading-8 tracking-tight">
                             <Link
                               href={`/blog/${slug}`}
-                              className="text-gray-900 dark:text-gray-100"
+                              className="text-gray-900 hover:text-green-600 dark:text-gray-100 dark:hover:text-green-600"
                             >
                               {title}
                             </Link>
@@ -89,11 +87,6 @@ export default function Home({ posts }) {
           >
             All Posts &rarr;
           </Link>
-        </div>
-      )}
-      {siteMetadata.newsletter.provider !== '' && (
-        <div className="flex items-center justify-center pt-4">
-          <NewsletterForm />
         </div>
       )}
     </>
