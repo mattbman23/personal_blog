@@ -43,7 +43,7 @@ Head to [Compute Instance](https://cloud.oracle.com/compute/instances) once logi
 
 Make sure to download your `private` and `public` key, once done you can set the bool volume to 500GB to make full use of their free perks and then create the instance.
 
-For example, the following jsx snippet can be used directly in an MDX file to render the page title component:
+To ssh into your compute instance once it's up. You first need to change to permission of your private key by running the `sudo chmod 400 <>` you can ssh into it by running the command `ssh opc@<your compute public ip address> -i <your downloaded private key>`
 
 ```jsx
 import PageTitle from './PageTitle.js'
