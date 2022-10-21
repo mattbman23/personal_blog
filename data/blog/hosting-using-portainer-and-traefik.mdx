@@ -29,7 +29,7 @@ See [upgrade guide](#upgrade-guide) below if you are migrating from v0 version o
 
 ## Setting up a new compute instance (Skip if not using oracle cloud)
 
-I will be using [Oracle Cloud](https://www.oracle.com/cloud/sign-in.html) as they provide a compute instance for life.
+I will be using [Oracle Cloud](https://www.oracle.com/cloud/sign-in.html) as they provide a compute instance for life (as of 2022).
 
 **Warning:** Oracle cloud only provides free 4vCPU, 24GB Mem, 500GB Storage computation betweem all the instances.
 
@@ -43,51 +43,73 @@ Head to [Compute Instance](https://cloud.oracle.com/compute/instances) once logi
 
 Make sure to download your `private` and `public` key, once done you can set the bool volume to 500GB to make full use of their free perks and then create the instance.
 
-To ssh into your compute instance once it's up. You first need to change to permission of your private key by running the `sudo chmod 400 <>` you can ssh into it by running the command `ssh opc@<your compute public ip address> -i <your downloaded private key>`
+To ssh into your compute instance once it's up. You first need to change to permission of your private key by running the `sudo chmod 400 <your downloaded private key>`, then you can ssh into it by running the command `ssh opc@<your compute public ip address> -i <your downloaded private key>`.
 
-```jsx
-import PageTitle from './PageTitle.js'
-;<PageTitle> Using JSX components in MDX </PageTitle>
-```
-
-import PageTitle from './PageTitle.js'
-
-<PageTitle> Using JSX components in MDX </PageTitle>
-
-The default configuration resolves all components relative to the `components` directory.
-
-**Note**:
-Components which require external image loaders also require additional esbuild configuration.
-Components which are dependent on global application state on lifecycle like the Nextjs `Link` component would also not work with this setup as each mdx file is built independently.
-For such cases, it is better to use component substitution.
+Run the following command to update the system, `sudo dnf update -y`.
 
 ## Installing docker
 
-Inspired by [Docusaurus](https://docusaurus.io/docs/next/markdown-features/inline-toc) and Gatsby's [gatsby-remark-table-of-contents](https://www.gatsbyjs.com/plugins/gatsby-remark-table-of-contents/),
-the `toc` variable containing all the top level headings of the document is passed to the MDX file and can be styled accordingly.
-To make generating a table of contents (TOC) simple, you can use the existing `TOCInline` component.
+Run the following commands in order to update the system and install docker
 
-For example, the TOC in this post was generated with the following code:
+```sh
+# Updates the system
+sudo yum update -y
 
-```jsx
-<TOCInline toc={props.toc} exclude="Overview" toHeading={2} />
+# Install the required deps
+sudo yum install -y yum-utils
+
+# Add docker repository to system
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+# Install docker
+sudo yum install docker-ce docker-ce-cli containerd.io -y
+
+# Enable and start docker
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Run docker as non-root
+sudo groupadd docker
+sudo usermod -aG docker $USER
+sudo newgrp docker
 ```
 
-You can customise the headings that are displayed by configuring the `fromHeading` and `toHeading` props, or exclude particular headings
-by passing a string or a string array to the `exclude` prop. By default, all headings that are of depth 3 or smaller are indented. This can be configured by changing the `indentDepth` property.
-A `asDisclosure` prop can be used to render the TOC within an expandable disclosure element.
-
-Here's the full TOC rendered in a disclosure element.
-
-```jsx
-<TOCInline toc={props.toc} asDisclosure />
-```
-
-<TOCInline toc={props.toc} asDisclosure />
+You should be able to run `docker ps` without any issue after running the commands aboved.
 
 ## Install and configure portainer
 
-You can map mdx blog content to layout components by configuring the frontmatter field. For example, this post is written with the new `PostSimple` layout!
+Before we install and run portainer, we should first create a persistent volume by running `docker volume create portainer_data`. This will enable to rerun from the backup incase the container somehow crashes.
+
+To run and start portianer just run `docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce.` This will run the portainer-ce image in the background named `portainer` with port 9000 exposed for access the UI. We also linked the container with both the created persistent volume and local docker so that portainer can manage docker for us.
+
+#### Exposing Portainer
+
+To access portainer from the cloud, we will need to expose port `9000` on both the system and network to the world. You can expose it from the system just by running `sudo firewall-cmd --zone=public --add-port=9000/tcp`.
+
+To expose it over the network, under your compute instance dashboard. Click on your `subnet` under the `Primary VNIC` section. Afterwards click on your `Default Security List` under the Security Lists section.
+
+<div className="flex flex-row -mx-2 overflow-hidden space-x-1 ">
+  <div className="my-1 px-2 w-full overflow-hidden xl:my-1 xl:px-2 xl:w-1/2 border border-2">
+    ![Maple](/static/images/portainerTraefik/aa.png)
+  </div>
+  <div className="my-1 px-2 w-full overflow-hidden xl:my-1 xl:px-2 xl:w-1/2 border border-2">
+    ![Lake](/static/images/portainerTraefik/ab.png)
+  </div>
+</div>
+
+Under the `Ingress Rules` section, click the `Add Ingress Rules` button and expose port 9000 by inputing it in the Destination Port Range. An example is shown below.
+
+<div className="my-1 px-2 w-screen overflow-hidden xl:my-1 xl:px-2 xl:w-2/2">
+  ![Mountains](/static/images/portainerTraefik/ac.png)
+</div>
+
+Once done, you can access it by typing your public ip address at port 9000 (`<your public ip address:9000`). You should be welcome to a portainer page asking to set your username and password.
+
+<div className="my-1 px-2 w-screen overflow-hidden xl:my-1 xl:px-2 xl:w-2/2">
+  ![Mountains](/static/images/portainerTraefik/ad.png)
+</div>
+
+After setting up your portainer account, you should be shown the `Environment Wizard` page. You can click `Get Started` to finally use portainer!
 
 ### Adding new templates
 
@@ -248,7 +270,7 @@ A long description of yourself...
 
 You can use this information in multiple places across the template. For example in the about section of the page, we grab the default author information with this line of code:
 
-```js
+```js:abc.js
 const authorDetails = await getFileBySlug('authors', ['default'])
 ```
 
