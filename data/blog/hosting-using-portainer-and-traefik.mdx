@@ -76,7 +76,7 @@ You should be able to run `docker ps` without any issue after running the comman
 
 Before we install and run portainer, we should first create a persistent volume by running `docker volume create portainer_data`. This will enable to rerun from the backup incase the container somehow crashes.
 
-To run and start portianer just run `docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce.` This will run the portainer-ce image in the background named `portainer` with port 9000 exposed for access the UI. We also linked the container with both the created persistent volume and local docker so that portainer can manage docker for us.
+To run and start portianer just run `docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce`. This will run the portainer-ce image in the background named `portainer` with port 9000 exposed for access the UI. We also linked the container with both the created persistent volume and local docker so that portainer can manage docker for us.
 
 #### Exposing Portainer
 
@@ -190,8 +190,7 @@ services:
 
 ### Using Traefik
 
-To use traefik with your containers, you will only need to update the labels when creating deploying it on portianer. Let's say you want to deploy a react app that is listening on port 3000, you will put in the image name and required environment variables like usually. Afterwards, you will add in custom traefik labels as shown below.
-`layout` is mapped to wrapper which wraps the entire MDX content.
+To use traefik with your containers, you will only need to update the labels when creating deploying it on portianer. Let's say you want to deploy a react app that is listening on port 3000, you will put in the image name and required environment variables like usually. Afterwards, you will add in custom traefik labels as shown below and set the network to `traefik_default`.
 
 ```sh
 traefik.enable: true
